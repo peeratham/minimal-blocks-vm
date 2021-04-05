@@ -36,27 +36,32 @@ const getOfficialAssetUrl = function (asset) {
 
 const getProgramXml = function (vm) {
   let targets = "";
+  const escape = (text)=>text.replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&apos;');
   for (let i = 0; i < vm.runtime.targets.length; i++) {
     const currTarget = vm.runtime.targets[i];
     const variableMap = currTarget.variables;
     const variables = Object.keys(variableMap).map((k) => variableMap[k]);
     const xmlString = `<${currTarget.isStage ? "stage " : "sprite "} 
-          name="${currTarget.getName()}" x="${currTarget.x}" y="${currTarget.y}"
+          name="${escape(currTarget.getName())}" x="${currTarget.x}" y="${currTarget.y}"
           size="${currTarget.size}" direction="${
       currTarget.direction
     }" visible="${currTarget.visible}">
           <xml>
               <costumes>${currTarget
                 .getCostumes()
-                .map((c) => '<costume name="' + c.name + '"/>')
+                .map((c) => '<costume name="' + escape(c.name) + '"/>')
                 .join("")}</costumes>
               <sounds>${currTarget
                 .getSounds()
-                .map((s) => '<sound name="' + s.name + '"/>')
+                .map((s) => '<sound name="' + escape(s.name) + '"/>')
                 .join("")}</sounds>
               <variables>${variables
                 .map((v) => v.toXML())
-                .join()}</variables>${currTarget.blocks.toXML()}
+                .join("")}</variables>${currTarget.blocks.toXML()}
           </xml>
           </${currTarget.isStage ? "stage" : "sprite"}>`;
 
